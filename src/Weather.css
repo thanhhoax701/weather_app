@@ -1,0 +1,23 @@
+.Weather {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.Weather:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.weather_country {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.weather_items {
+    font-size: 18px;
+    margin: 10px 0;
+}
