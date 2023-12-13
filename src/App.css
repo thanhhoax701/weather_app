@@ -38,10 +38,9 @@
   }
 }
 
-
 /* Thoi tiet hien tai */
 .title {
-  font-size: 2rem;
+  font-size: 40px;
   margin-bottom: 20px;
 }
 .location-icon {
@@ -85,3 +84,22 @@
 .search_button:hover {
   background-color: #0056b3;
 }
+
+/* Du bao thoi tiet hien thi theo gio */
+.toggle_button {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.toggle_button:hover {
+  background-color: #0056b3;
+}
+
+/* CSS cho modal hien thi theo gio*/

@@ -2,9 +2,9 @@
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 10px;
     margin-top: 20px;
-    width: 300px;
+    width: 500px;
     text-align: center;
     transition: all 0.3s ease;
     margin: 0 auto;
@@ -15,11 +15,25 @@
 }
 
 .weather_country {
-    font-size: 24px;
+    font-size: 28px;
     margin-bottom: 10px;
+    font-family: "Recursive", sans-serif;
+    font-weight: 600;
 }
 
-.weather_items {
-    font-size: 18px;
+.flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.weather_items_one,
+.weather_items_two,
+.weather_items_three {
+    font-size: 20px;
     margin: 10px 0;
+    padding: 10px;
+}
+
+.weather_items_one {
+    /* padding: 15px; */
 }
