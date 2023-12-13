@@ -1,0 +1,42 @@
+.Navbar-container {
+    /* margin-left: 20px; */
+}
+
+.Navbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+}
+
+.Navbar-item {
+    cursor: pointer;
+    color: white;
+    padding: 10px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.Navbar-item:hover {
+    color: #007bff;
+}
+
+/* Thêm các styles để biến các mục thành các button */
+.Navbar-button {
+    padding: 10px 20px;
+    background-color: #2c3e50;
+    /* Màu khác để tránh trùng lặp */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.Navbar-button:hover {
+    background-color: #1a242f;
+    /* Màu hover khác để tạo hiệu ứng */
+}

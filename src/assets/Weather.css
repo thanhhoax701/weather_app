@@ -16,7 +16,7 @@
 
 .weather_country {
     font-size: 28px;
-    margin-bottom: 10px;
+    margin: 10px 0;
     font-family: "Recursive", sans-serif;
     font-weight: 600;
 }

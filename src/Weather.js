@@ -1,5 +1,5 @@
 import React from 'react';
-import './Weather.css'; // Import CSS
+import './assets/Weather.css'; // Import CSS
 
 const Weather = ({ data }) => {
     const formatTime = (timestamp) => {
