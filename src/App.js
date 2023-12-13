@@ -10,7 +10,6 @@ import "./App.css";
 function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [hourlyWeatherData, setHourlyWeatherData] = useState(null);
-  const [dailyWeatherData, setDailyWeatherData] = useState(null);
   const [searchCity, setSearchCity] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
@@ -18,16 +17,19 @@ function App() {
   const [currentHourIndex, setCurrentHourIndex] = useState(0);
 
   const handleNextHour = () => {
-    if (currentHourIndex < hourlyWeatherData.length - 6) {
-      setCurrentHourIndex(currentHourIndex + 6);
+    const newIndex = currentHourIndex + 6;
+    if (newIndex < hourlyWeatherData.length) {
+      setCurrentHourIndex(newIndex);
     }
   };
 
   const handlePrevHour = () => {
-    if (currentHourIndex >= 6) {
-      setCurrentHourIndex(currentHourIndex - 6);
+    const newIndex = currentHourIndex - 6;
+    if (newIndex >= 0) {
+      setCurrentHourIndex(newIndex);
     }
   };
+
 
   const getWeatherData = async (lat, lon) => {
     try {
@@ -44,14 +46,19 @@ function App() {
         `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
       );
 
+      // console.log("Hourly Weather Response:", hourlyWeatherResponse.data);
+
       // Lọc dữ liệu thời tiết theo từng giờ từ dữ liệu forecast
+      const currentHour = currentDateTime.getHours();
       const filteredHourlyData = hourlyWeatherResponse.data.list.filter((item) => {
         const itemDate = new Date(item.dt * 1000);
-        const currentDate = new Date();
-        const next24Hours = new Date(currentDate);
-        next24Hours.setHours(currentDate.getHours() + 24);
+        const itemHour = itemDate.getHours();
 
-        return itemDate >= currentDate && itemDate < next24Hours;
+        // Xác định giờ hiện tại và giờ tiếp theo 24 giờ
+        const next24Hours = (currentHour + 24) % 24;
+
+        // Lọc dữ liệu từ giờ hiện tại đến giờ tiếp theo 24 giờ
+        return (itemHour >= currentHour && itemHour <= 23) || (itemHour >= 0 && itemHour < next24Hours);
       });
 
       setHourlyWeatherData(filteredHourlyData);
@@ -198,7 +205,6 @@ function App() {
                 Next
               </button>
             </div>
-
           </div>
         )}
       </div>
