@@ -5,15 +5,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Weather from "./Weather";
 import Navbar from "./Navbar";
+
+// CSS
 import "./App.css";
+import "./assets/DailyWeather.css"
 
 function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [hourlyWeatherData, setHourlyWeatherData] = useState(null);
+  const [dailyWeatherData, setDailyWeatherData] = useState(null);
   const [searchCity, setSearchCity] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [showHourlyWeather, setShowHourlyWeather] = useState(false);
+  const [showDailyWeather, setShowDailyWeather] = useState(false);
   const [currentHourIndex, setCurrentHourIndex] = useState(0);
 
   const handleNextHour = () => {
@@ -30,34 +35,26 @@ function App() {
     }
   };
 
-
   const getWeatherData = async (lat, lon) => {
     try {
       setLoading(true);
 
-      // Lấy thông tin thời tiết hiện tại
       const currentWeatherResponse = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
       );
       setWeatherData(currentWeatherResponse.data);
 
-      // Lấy thông tin thời tiết theo từng giờ
       const hourlyWeatherResponse = await axios.get(
         `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
       );
 
-      // console.log("Hourly Weather Response:", hourlyWeatherResponse.data);
-
-      // Lọc dữ liệu thời tiết theo từng giờ từ dữ liệu forecast
       const currentHour = currentDateTime.getHours();
       const filteredHourlyData = hourlyWeatherResponse.data.list.filter((item) => {
         const itemDate = new Date(item.dt * 1000);
         const itemHour = itemDate.getHours();
 
-        // Xác định giờ hiện tại và giờ tiếp theo 24 giờ
         const next24Hours = (currentHour + 24) % 24;
 
-        // Lọc dữ liệu từ giờ hiện tại đến giờ tiếp theo 24 giờ
         return (itemHour >= currentHour && itemHour <= 23) || (itemHour >= 0 && itemHour < next24Hours);
       });
 
@@ -69,11 +66,29 @@ function App() {
     }
   };
 
+  const getDailyWeatherData = async (lat, lon) => {
+    try {
+      setLoading(true);
+
+      const dailyWeatherResponse = await axios.get(
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+      );
+
+      const next7DaysData = dailyWeatherResponse.data.daily.slice(1, 8);
+      setDailyWeatherData(next7DaysData);
+    } catch (error) {
+      console.error("Error fetching daily weather data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
         getWeatherData(latitude, longitude);
+        getDailyWeatherData(latitude, longitude);
       });
     } else {
       alert("Geolocation is not supported by your browser.");
@@ -94,7 +109,6 @@ function App() {
 
       setWeatherData(weatherResponse.data);
 
-      // Lọc dữ liệu thời tiết theo từng giờ từ dữ liệu forecast
       const filteredHourlyData = hourlyWeatherResponse.data.list.filter((item) => {
         const itemDate = new Date(item.dt * 1000);
         const currentDate = new Date();
@@ -114,6 +128,10 @@ function App() {
 
   const handleCloseHourlyWeather = () => {
     setShowHourlyWeather(false);
+  };
+
+  const handleCloseDailyWeather = () => {
+    setShowDailyWeather(false);
   };
 
   useEffect(() => {
@@ -141,7 +159,10 @@ function App() {
     <div className="App">
       <div className="weather_header">
         <div className="Navbar-container">
-          <Navbar setShowHourlyWeather={setShowHourlyWeather} />
+          <Navbar
+            setShowHourlyWeather={setShowHourlyWeather}
+            setShowDailyWeather={setShowDailyWeather}
+          />
         </div>
 
         <div className="weather_intro">
@@ -175,19 +196,19 @@ function App() {
 
       <div className="weather_content">
         {showHourlyWeather && hourlyWeatherData && (
-          <div className="hourly-weather">
-            <div className="hourly-weather-title">
+          <div className="hourly_weather">
+            <div className="hourly_weather_title">
               <h2>Hourly Weather</h2>
-              <button className="close-button" onClick={handleCloseHourlyWeather}>
+              <button className="close_button" onClick={handleCloseHourlyWeather}>
                 Close
               </button>
             </div>
-            <div className="hourly-weather-list">
-              <button className="hourly-weather-button" onClick={handlePrevHour}>
+            <div className="hourly_weather_list">
+              <button className="hourly_weather_button" onClick={handlePrevHour}>
                 Previous
               </button>
               {hourlyWeatherData.slice(currentHourIndex, currentHourIndex + 6).map((hourlyData) => (
-                <div key={hourlyData.dt} className="hourly-weather-item">
+                <div key={hourlyData.dt} className="hourly_weather_item">
                   <p>
                     {new Date(hourlyData.dt * 1000).getHours()}:00 -{" "}
                     {Math.round(hourlyData.main.temp)}°C
@@ -201,9 +222,36 @@ function App() {
                   <p>Status: {hourlyData.weather[0].description}</p>
                 </div>
               ))}
-              <button className="hourly-weather-button" onClick={handleNextHour}>
+              <button className="hourly_weather_button" onClick={handleNextHour}>
                 Next
               </button>
+            </div>
+          </div>
+        )}
+
+        {showDailyWeather && dailyWeatherData && (
+          <div className="daily_weather">
+            <div className="daily_weather_title">
+              <h2>Daily Weather</h2>
+              <button className="close_button" onClick={handleCloseDailyWeather}>
+                Close
+              </button>
+            </div>
+            <div className="daily_weather_list">
+              {dailyWeatherData.map((dailyData) => (
+                <div key={dailyData.dt} className="daily_weather_item">
+                  <p>{new Date(dailyData.dt * 1000).toLocaleDateString()}</p>
+                  <img
+                    src={`http://openweathermap.org/img/wn/${dailyData.weather[0].icon}.png`}
+                    alt={dailyData.weather[0].description}
+                  />
+                  <p>Max Temp: {Math.round(dailyData.temp.max)}°C</p>
+                  <p>Min Temp: {Math.round(dailyData.temp.min)}°C</p>
+                  <p>Humidity: {dailyData.humidity}%</p>
+                  <p>Wind Speed: {dailyData.wind_speed} m/s</p>
+                  <p>Status: {dailyData.weather[0].description}</p>
+                </div>
+              ))}
             </div>
           </div>
         )}

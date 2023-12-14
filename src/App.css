@@ -28,6 +28,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -54,6 +55,7 @@
   border-bottom: 2px solid #333;
   padding-bottom: 5px;
 }
+
 .location-icon {
   font-size: 35px;
   cursor: pointer;
@@ -94,6 +96,7 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
 .search_button:hover {
   background-color: #0056b3;
 }
@@ -104,52 +107,59 @@
   padding: 20px;
 }
 
-.hourly-weather {
+.hourly_weather {
   padding: 20px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px;
   margin-top: 10px;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: auto;
 }
 
-.hourly-weather-title {
+.hourly_weather_title {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.hourly-weather-title h2 {
-  margin: 0; /* Để loại bỏ margin mặc định của h2 */
+.hourly_weather_title h2 {
+  margin: 0;
+  /* Để loại bỏ margin mặc định của h2 */
 }
 
-.close-button {
-  padding: 5px 10px;
-  font-size: 14px;
+.close_button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 10px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s linear;
+  align-self: flex-start;
+  transition: 0.3s linear;
+
 }
 
-.close-button:hover {
+.close_button:hover {
   color: #fff;
   background-color: red;
 }
 
 
-.hourly-weather-list {
+.hourly_weather_list {
   display: flex;
   overflow-x: auto;
   justify-content: center;
 }
 
-.hourly-weather-item {
+.hourly_weather_item {
   border: 1px solid #ccc;
   margin: 5px;
   padding: 10px;
 }
 
 
-.hourly-weather-button {
+.hourly_weather_button {
   cursor: pointer;
   padding: 5px;
   font-size: 14px;
@@ -159,6 +169,6 @@
   transition: color 0.3s ease;
 }
 
-.hourly-weather-button:hover {
+.hourly_weather_button:hover {
   color: #0056b3;
 }
