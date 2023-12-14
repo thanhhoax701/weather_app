@@ -9,6 +9,7 @@ import Navbar from "./Navbar";
 // CSS
 import "./App.css";
 import "./assets/DailyWeather.css"
+import "./assets/Weather5DaysAgo.css";
 
 function App() {
   const [weatherData, setWeatherData] = useState(null);
@@ -20,6 +21,31 @@ function App() {
   const [showHourlyWeather, setShowHourlyWeather] = useState(false);
   const [showDailyWeather, setShowDailyWeather] = useState(false);
   const [currentHourIndex, setCurrentHourIndex] = useState(0);
+
+  const [show5DaysAgoWeather, setShow5DaysAgoWeather] = useState(false);
+  const [weather5DaysAgo, setWeather5DaysAgo] = useState(null);
+
+  const handleFetchWeather5DaysAgo = async () => {
+    setShow5DaysAgoWeather(true);
+
+    try {
+      // Calculate timestamp for 5 days ago
+      const fiveDaysAgoTimestamp = Math.round((currentDateTime.getTime() - 5 * 24 * 60 * 60 * 1000) / 1000);
+
+      // Fetch weather data for 5 days ago
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${fiveDaysAgoTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+      );
+
+      setWeather5DaysAgo(response.data);
+    } catch (error) {
+      console.error("Error fetching weather data 5 days ago:", error);
+    }
+  };
+
+  const handleClose5DaysAgoWeather = () => {
+    setShow5DaysAgoWeather(false);
+  };
 
   const handleNextHour = () => {
     const newIndex = currentHourIndex + 6;
@@ -162,6 +188,7 @@ function App() {
           <Navbar
             setShowHourlyWeather={setShowHourlyWeather}
             setShowDailyWeather={setShowDailyWeather}
+            setShow5DaysAgoWeather={handleFetchWeather5DaysAgo}
           />
         </div>
 
@@ -250,6 +277,32 @@ function App() {
                   <p>Humidity: {dailyData.humidity}%</p>
                   <p>Wind Speed: {dailyData.wind_speed} m/s</p>
                   <p>Status: {dailyData.weather[0].description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {show5DaysAgoWeather && weather5DaysAgo && (
+          <div className="FiveDays_ago_weather">
+            <div className="FiveDays_ago_weather_title">
+              <h2>Weather 5 Days Ago</h2>
+              <button className="close_button" onClick={handleClose5DaysAgoWeather}>
+                Close
+              </button>
+            </div>
+            <div className="FiveDays_ago_weather_list">
+              {weather5DaysAgo.hourly.map((hourlyData) => (
+                <div key={hourlyData.dt} className="FiveDays_ago_weather_item">
+                  <p>{new Date(hourlyData.dt * 1000).toLocaleTimeString()}</p>
+                  <img
+                    src={`http://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
+                    alt={hourlyData.weather[0].description}
+                  />
+                  <p>{Math.round(hourlyData.temp)}°C</p>
+                  <p>Humidity: {hourlyData.humidity}%</p>
+                  <p>Wind Speed: {hourlyData.wind_speed} m/s</p>
+                  <p>Status: {hourlyData.weather[0].description}</p>
                 </div>
               ))}
             </div>

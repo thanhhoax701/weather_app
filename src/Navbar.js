@@ -1,9 +1,11 @@
+// Navbar.js
 import React from 'react';
 import './assets/Navbar.css';
 
 function Navbar({
     setShowHourlyWeather,
     setShowDailyWeather,
+    setShow5DaysAgoWeather,
     setShow30DaysWeather,
 }) {
     return (
@@ -13,6 +15,9 @@ function Navbar({
             </button>
             <button className="Navbar-button" onClick={() => setShowDailyWeather(true)}>
                 Daily Weather
+            </button>
+            <button className="Navbar-button" onClick={() => setShow5DaysAgoWeather(true)}>
+                Weather 5 Days Ago
             </button>
             <button className="Navbar-button" onClick={() => setShow30DaysWeather(true)}>
                 30 Days Weather
