@@ -25,26 +25,16 @@ function App() {
   const [show5DaysAgoWeather, setShow5DaysAgoWeather] = useState(false);
   const [weather5DaysAgo, setWeather5DaysAgo] = useState(null);
 
-  const handleFetchWeather5DaysAgo = async () => {
-    setShow5DaysAgoWeather(true);
 
-    try {
-      // Calculate timestamp for 5 days ago
-      const fiveDaysAgoTimestamp = Math.round((currentDateTime.getTime() - 5 * 24 * 60 * 60 * 1000) / 1000);
+  const getFormattedDate = () => {
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
 
-      // Fetch weather data for 5 days ago
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${fiveDaysAgoTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
-      );
-
-      setWeather5DaysAgo(response.data);
-    } catch (error) {
-      console.error("Error fetching weather data 5 days ago:", error);
-    }
-  };
-
-  const handleClose5DaysAgoWeather = () => {
-    setShow5DaysAgoWeather(false);
+    return currentDateTime.toLocaleDateString("en-US", options);
   };
 
   const handleNextHour = () => {
@@ -60,6 +50,7 @@ function App() {
       setCurrentHourIndex(newIndex);
     }
   };
+
 
   const getWeatherData = async (lat, lon) => {
     try {
@@ -109,6 +100,25 @@ function App() {
     }
   };
 
+  const handleFetchWeather5DaysAgo = async () => {
+    setShow5DaysAgoWeather(true);
+  
+    try {
+      // Calculate timestamp for 5 days ago
+      const fiveDaysAgoTimestamp = Math.round((currentDateTime.getTime() - 5 * 24 * 60 * 60 * 1000) / 1000);
+  
+      // Fetch weather data for 5 days ago
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${fiveDaysAgoTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+      );
+  
+      setWeather5DaysAgo(response.data);
+    } catch (error) {
+      console.error("Error fetching weather data 5 days ago:", error);
+    }
+  };
+
+  
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -160,6 +170,10 @@ function App() {
     setShowDailyWeather(false);
   };
 
+  const handleClose5DaysAgoWeather = () => {
+    setShow5DaysAgoWeather(false);
+  };
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDateTime(new Date());
@@ -169,17 +183,6 @@ function App() {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  const getFormattedDate = () => {
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-
-    return currentDateTime.toLocaleDateString("en-US", options);
-  };
 
   return (
     <div className="App">
