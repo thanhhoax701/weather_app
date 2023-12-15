@@ -134,33 +134,40 @@ function App() {
   const handleSearch = async () => {
     try {
       setLoading(true);
-      const [weatherResponse, hourlyWeatherResponse] = await Promise.all([
+      const [weatherResponse, hourlyWeatherResponse, dailyWeatherResponse] = await Promise.all([
         axios.get(
           `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
         ),
         axios.get(
           `https://api.openweathermap.org/data/2.5/forecast?q=${searchCity}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
         ),
+        axios.get(
+          `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&exclude=current,minutely,hourly,alerts&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        ),
       ]);
-
+  
       setWeatherData(weatherResponse.data);
-
+  
       const filteredHourlyData = hourlyWeatherResponse.data.list.filter((item) => {
         const itemDate = new Date(item.dt * 1000);
         const currentDate = new Date();
         const next24Hours = new Date(currentDate);
         next24Hours.setHours(currentDate.getHours() + 24);
-
+  
         return itemDate >= currentDate && itemDate < next24Hours;
       });
-
+  
       setHourlyWeatherData(filteredHourlyData);
+  
+      const next7DaysData = dailyWeatherResponse.data.daily.slice(1, 8);
+      setDailyWeatherData(next7DaysData);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleCloseHourlyWeather = () => {
     setShowHourlyWeather(false);
@@ -180,9 +187,14 @@ function App() {
     }, 1000);
 
     getCurrentLocation();
+    
+    // Trigger the search when searchCity changes
+    if (searchCity) {
+      handleSearch();
+    }
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [searchCity]);
 
   return (
     <div className="App">
