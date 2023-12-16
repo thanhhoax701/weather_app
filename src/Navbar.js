@@ -6,7 +6,7 @@ function Navbar({
     setShowHourlyWeather,
     setShowDailyWeather,
     setShow5DaysAgoWeather,
-    setShow30DaysWeather,
+    setShow30DaysAgoWeather,
 }) {
     return (
         <nav className="Navbar">
@@ -19,7 +19,7 @@ function Navbar({
             <button className="Navbar-button" onClick={() => setShow5DaysAgoWeather(true)}>
                 Weather 5 Days Ago
             </button>
-            <button className="Navbar-button" onClick={() => setShow30DaysWeather(true)}>
+            <button className="Navbar-button" onClick={() => setShow30DaysAgoWeather(true)}>
                 30 Days Weather
             </button>
         </nav>

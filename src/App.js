@@ -10,12 +10,17 @@ import Navbar from "./Navbar";
 import "./App.css";
 import "./assets/DailyWeather.css"
 import "./assets/Weather5DaysAgo.css";
+import "./assets/HistoryWeather30DaysAgo.css";
+
 
 function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [hourlyWeatherData, setHourlyWeatherData] = useState(null);
   const [dailyWeatherData, setDailyWeatherData] = useState(null);
   const [searchCity, setSearchCity] = useState("");
+
+  const [currentCity, setCurrentCity] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [showHourlyWeather, setShowHourlyWeather] = useState(false);
@@ -24,6 +29,10 @@ function App() {
 
   const [show5DaysAgoWeather, setShow5DaysAgoWeather] = useState(false);
   const [weather5DaysAgo, setWeather5DaysAgo] = useState(null);
+
+  const [show30DaysAgoWeather, setShow30DaysAgoWeather] = useState(false);
+  const [weather30DaysAgo, setWeather30DaysAgo] = useState(null);
+
 
 
   const getFormattedDate = () => {
@@ -91,6 +100,8 @@ function App() {
         `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
       );
 
+      console.log(lat, lon);
+
       const next7DaysData = dailyWeatherResponse.data.daily.slice(1, 8);
       setDailyWeatherData(next7DaysData);
     } catch (error) {
@@ -102,23 +113,47 @@ function App() {
 
   const handleFetchWeather5DaysAgo = async () => {
     setShow5DaysAgoWeather(true);
-  
+
     try {
       // Calculate timestamp for 5 days ago
       const fiveDaysAgoTimestamp = Math.round((currentDateTime.getTime() - 5 * 24 * 60 * 60 * 1000) / 1000);
-  
-      // Fetch weather data for 5 days ago
+
+      // Fetch weather data for 5 days ago based on current city
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${fiveDaysAgoTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
       );
-  
+
       setWeather5DaysAgo(response.data);
     } catch (error) {
       console.error("Error fetching weather data 5 days ago:", error);
     }
   };
 
+
+
+  const handleFetchWeather30DaysAgo = async () => {
+    setShow30DaysAgoWeather(true);
   
+    try {
+      if (weatherData && weatherData.coord) {
+        const { lat, lon } = weatherData.coord;
+  
+        // Tính toán timestamp cho 30 ngày trước
+        const thirtyDaysAgoTimestamp = Math.round((currentDateTime.getTime() - 30 * 24 * 60 * 60 * 1000) / 1000);
+  
+        // Lấy dữ liệu thời tiết cho 30 ngày trước dựa trên vị trí hiện tại
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${thirtyDaysAgoTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        );
+  
+        setWeather30DaysAgo(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching weather data 30 days ago:", error);
+    }
+  };
+
+
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -131,9 +166,11 @@ function App() {
     }
   };
 
+
   const handleSearch = async () => {
     try {
       setLoading(true);
+
       const [weatherResponse, hourlyWeatherResponse, dailyWeatherResponse] = await Promise.all([
         axios.get(
           `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
@@ -145,29 +182,36 @@ function App() {
           `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&exclude=current,minutely,hourly,alerts&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
         ),
       ]);
-  
+
       setWeatherData(weatherResponse.data);
-  
+
       const filteredHourlyData = hourlyWeatherResponse.data.list.filter((item) => {
         const itemDate = new Date(item.dt * 1000);
         const currentDate = new Date();
         const next24Hours = new Date(currentDate);
         next24Hours.setHours(currentDate.getHours() + 24);
-  
+
+        console.log('dt:', item.dt);
+
         return itemDate >= currentDate && itemDate < next24Hours;
       });
-  
+
       setHourlyWeatherData(filteredHourlyData);
-  
+
       const next7DaysData = dailyWeatherResponse.data.daily.slice(1, 8);
       setDailyWeatherData(next7DaysData);
+
+      // Update current city
+      setCurrentCity(searchCity);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
-  
+
+
+
 
   const handleCloseHourlyWeather = () => {
     setShowHourlyWeather(false);
@@ -181,20 +225,20 @@ function App() {
     setShow5DaysAgoWeather(false);
   };
 
+  const handleClose30DaysAgoWeather = () => {
+    setShow30DaysAgoWeather(false);
+  };
+  
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
 
     getCurrentLocation();
-    
-    // Trigger the search when searchCity changes
-    if (searchCity) {
-      handleSearch();
-    }
 
     return () => clearInterval(intervalId);
-  }, [searchCity]);
+  }, []);
 
   return (
     <div className="App">
@@ -204,6 +248,7 @@ function App() {
             setShowHourlyWeather={setShowHourlyWeather}
             setShowDailyWeather={setShowDailyWeather}
             setShow5DaysAgoWeather={handleFetchWeather5DaysAgo}
+            setShow30DaysAgoWeather={handleFetchWeather30DaysAgo}
           />
         </div>
 
@@ -323,6 +368,33 @@ function App() {
             </div>
           </div>
         )}
+
+        {show30DaysAgoWeather && weather30DaysAgo && (
+          <div className="weather_30_days_ago">
+            <div className="weather_30_days_ago_title">
+              <h2>Weather 30 Days Ago</h2>
+              <button className="close_button" onClick={handleClose30DaysAgoWeather}>
+                Close
+              </button>
+            </div>
+            <div className="weather_30_days_ago_list">
+              {weather30DaysAgo.hourly.map((hourlyData) => (
+                <div key={hourlyData.dt} className="weather_30_days_ago_item">
+                  <p>{new Date(hourlyData.dt * 1000).toLocaleTimeString()}</p>
+                  <img
+                    src={`http://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
+                    alt={hourlyData.weather[0].description}
+                  />
+                  <p>{Math.round(hourlyData.temp)}°C</p>
+                  <p>Humidity: {hourlyData.humidity}%</p>
+                  <p>Wind Speed: {hourlyData.wind_speed} m/s</p>
+                  <p>Status: {hourlyData.weather[0].description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
