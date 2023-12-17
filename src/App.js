@@ -24,11 +24,14 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [showHourlyWeather, setShowHourlyWeather] = useState(false);
+
   const [showDailyWeather, setShowDailyWeather] = useState(false);
   const [currentHourIndex, setCurrentHourIndex] = useState(0);
 
   const [show5DaysAgoWeather, setShow5DaysAgoWeather] = useState(false);
   const [weather5DaysAgo, setWeather5DaysAgo] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [detailWeatherData, setDetailWeatherData] = useState(null);
 
   const [show30DaysAgoWeather, setShow30DaysAgoWeather] = useState(false);
   const [weather30DaysAgo, setWeather30DaysAgo] = useState(null);
@@ -141,23 +144,37 @@ function App() {
     }
   };
 
+  const handleShowDetailModal = async (dayData) => {
+    try {
+      const dayTimestamp = dayData.data.current.dt;
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${dayTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+      );
+
+      setDetailWeatherData(response.data);
+      setShowDetailModal(true);
+    } catch (error) {
+      console.error("Error fetching detailed weather data:", error);
+    }
+  };
+
 
 
   const handleFetchWeather30DaysAgo = async () => {
     setShow30DaysAgoWeather(true);
-  
+
     try {
       if (weatherData && weatherData.coord) {
         const { lat, lon } = weatherData.coord;
-  
+
         // Tính toán timestamp cho 30 ngày trước
         const thirtyDaysAgoTimestamp = Math.round((currentDateTime.getTime() - 30 * 24 * 60 * 60 * 1000) / 1000);
-  
+
         // Lấy dữ liệu thời tiết cho 30 ngày trước dựa trên vị trí hiện tại
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${thirtyDaysAgoTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
         );
-  
+
         setWeather30DaysAgo(response.data);
       }
     } catch (error) {
@@ -191,7 +208,7 @@ function App() {
       const hourlyWeatherResponse = await axios.get(
         `https://api.openweathermap.org/data/2.5/forecast?q=${searchCity}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
       );
-  
+
       const filteredHourlyData = hourlyWeatherResponse.data.list.filter((item) => {
         const itemDate = new Date(item.dt * 1000);
         const currentDate = new Date();
@@ -209,7 +226,7 @@ function App() {
       const dailyWeatherResponse = await axios.get(
         `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherResponse.data.coord.lat}&lon=${weatherResponse.data.coord.lon}&exclude=current,minutely,hourly,alerts&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
       );
-  
+
       const next7DaysData = dailyWeatherResponse.data.daily.slice(1, 8);
       setDailyWeatherData(next7DaysData);
 
@@ -218,11 +235,11 @@ function App() {
       const newWeather5DaysAgo = [];
       for (let i = 1; i <= 5; i++) {
         const dayTimestamp = Math.round((currentDateTime.getTime() - i * 24 * 60 * 60 * 1000) / 1000);
-  
+
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherResponse.data.coord.lat}&lon=${weatherResponse.data.coord.lon}&dt=${dayTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
         );
-  
+
         newWeather5DaysAgo.push({ day: i, data: response.data });
       }
       setWeather5DaysAgo(newWeather5DaysAgo);
@@ -253,20 +270,32 @@ function App() {
     setShow5DaysAgoWeather(false);
   };
 
+  const closeDetailModal = () => {
+    setShowDetailModal(false);
+  };
+
   const handleClose30DaysAgoWeather = () => {
     setShow30DaysAgoWeather(false);
   };
-  
+
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentDateTime(new Date());
-    }, 1000);
-
     getCurrentLocation();
 
-    return () => clearInterval(intervalId);
-  }, []);
+    // Lắng nghe sự kiện click trên nền
+    const handleOutsideClick = (e) => {
+      if (showDetailModal && !e.target.closest(".detail_weather_modal")) {
+        closeDetailModal();
+      }
+    };
+    // Đăng ký sự kiện khi component được mount
+    document.addEventListener("click", handleOutsideClick);
+
+    // Hủy đăng ký sự kiện khi component unmount
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, [showDetailModal]);
 
   return (
     <div className="App">
@@ -391,6 +420,36 @@ function App() {
                   <p>Humidity: {dayData.data.current.humidity}%</p>
                   <p>Wind Speed: {dayData.data.current.wind_speed} m/s</p>
                   <p>Status: {dayData.data.current.weather[0].description}</p>
+                  <button type="button" className="btn_details" onClick={() => handleShowDetailModal(dayData)}>
+                    Xem chi tiết
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showDetailModal && detailWeatherData && (
+          <div className="detail_weather_modal">
+            <div className="detail_weather_modal_title">
+              <h2>Detailed Weather</h2>
+              <h1>{new Date(detailWeatherData.hourly[0].dt * 1000).toLocaleDateString()}</h1>
+              <button className="close_button" onClick={closeDetailModal}>
+                Close
+              </button>
+            </div>
+            <div className="detail_weather_modal_list">
+              {detailWeatherData.hourly.map((hourlyData) => (
+                <div key={hourlyData.dt} className="detail_weather_modal_item">
+                <p>{new Date(hourlyData.dt * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
+                  <img
+                    src={`http://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
+                    alt={hourlyData.weather[0].description}
+                  />
+                  <p>{Math.round(hourlyData.temp)}°C</p>
+                  <p>Humidity: {hourlyData.humidity}%</p>
+                  <p>Wind Speed: {hourlyData.wind_speed} m/s</p>
+                  <p>Status: {hourlyData.weather[0].description}</p>
                 </div>
               ))}
             </div>
