@@ -343,7 +343,7 @@ function App() {
       </div>
 
       <div className="weather_content">
-      {/* Hourly Weather */}
+        {/* Hourly Weather */}
         {showHourlyWeather && hourlyWeatherData && (
           <div className="hourly_weather">
             <div className="hourly_weather_title">
@@ -408,7 +408,7 @@ function App() {
         )}
 
 
-{/* Weather 5 Days Ago */}
+        {/* Weather 5 Days Ago */}
         {show5DaysAgoWeather && weather5DaysAgo && (
           <div className="FiveDays_ago_weather">
             <div className="FiveDays_ago_weather_title">
@@ -466,7 +466,7 @@ function App() {
         )}
 
 
-{/*  */}
+        {/*  */}
         {show30DaysAgoWeather && weather30DaysAgo && (
           <div className="weather_30_days_ago">
             <div className="weather_30_days_ago_title">
