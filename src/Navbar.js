@@ -20,7 +20,7 @@ function Navbar({
                 Weather 5 Days Ago
             </button>
             <button className="Navbar-button" onClick={() => setShow30DaysAgoWeather(true)}>
-                30 Days Weather
+            Weather History 30 Days Ago
             </button>
         </nav>
     );
