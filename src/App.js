@@ -30,8 +30,8 @@ function App() {
 
   const [show5DaysAgoWeather, setShow5DaysAgoWeather] = useState(false);
   const [weather5DaysAgo, setWeather5DaysAgo] = useState(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [detailWeatherData, setDetailWeatherData] = useState(null);
+  const [showDetail5DaysAgo, setShowDetail5DaysAgo] = useState(false);
+  const [detail5DaysAgoWeatherData, setDetail5DaysAgoWeatherData] = useState(null);
 
   const [show30DaysAgoWeather, setShow30DaysAgoWeather] = useState(false);
   const [weather30DaysAgo, setWeather30DaysAgo] = useState(null);
@@ -95,6 +95,8 @@ function App() {
     }
   };
 
+
+
   const getDailyWeatherData = async (lat, lon) => {
     try {
       setLoading(true);
@@ -113,6 +115,8 @@ function App() {
       setLoading(false);
     }
   };
+
+
 
   const handleFetchWeather5DaysAgo = async () => {
     setShow5DaysAgoWeather(true);
@@ -144,15 +148,15 @@ function App() {
     }
   };
 
-  const handleShowDetailModal = async (dayData) => {
+  const handleShowDetail5DaysAgo = async (dayData) => {
     try {
       const dayTimestamp = dayData.data.current.dt;
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${dayTimestamp}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
 
-      setDetailWeatherData(response.data);
-      setShowDetailModal(true);
+      setDetail5DaysAgoWeatherData(response.data);
+      setShowDetail5DaysAgo(true);
     } catch (error) {
       console.error("Error fetching detailed weather data:", error);
     }
@@ -257,7 +261,7 @@ function App() {
 
 
 
-
+  // CLOSE
   const handleCloseHourlyWeather = () => {
     setShowHourlyWeather(false);
   };
@@ -270,8 +274,8 @@ function App() {
     setShow5DaysAgoWeather(false);
   };
 
-  const closeDetailModal = () => {
-    setShowDetailModal(false);
+  const closeDetail5DaysAgo = () => {
+    setShowDetail5DaysAgo(false);
   };
 
   const handleClose30DaysAgoWeather = () => {
@@ -284,8 +288,8 @@ function App() {
 
     // Lắng nghe sự kiện click trên nền
     const handleOutsideClick = (e) => {
-      if (showDetailModal && !e.target.closest(".detail_weather_modal")) {
-        closeDetailModal();
+      if (showDetail5DaysAgo && !e.target.closest(".detail_weather_modal")) {
+        closeDetail5DaysAgo();
       }
     };
     // Đăng ký sự kiện khi component được mount
@@ -295,7 +299,7 @@ function App() {
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, [showDetailModal]);
+  }, [showDetail5DaysAgo]);
 
   return (
     <div className="App">
@@ -339,6 +343,7 @@ function App() {
       </div>
 
       <div className="weather_content">
+        {/* Hourly Weather */}
         {showHourlyWeather && hourlyWeatherData && (
           <div className="hourly_weather">
             <div className="hourly_weather_title">
@@ -373,6 +378,8 @@ function App() {
           </div>
         )}
 
+
+        {/* Daily Weather */}
         {showDailyWeather && dailyWeatherData && (
           <div className="daily_weather">
             <div className="daily_weather_title">
@@ -400,6 +407,8 @@ function App() {
           </div>
         )}
 
+
+        {/* Weather 5 Days Ago */}
         {show5DaysAgoWeather && weather5DaysAgo && (
           <div className="FiveDays_ago_weather">
             <div className="FiveDays_ago_weather_title">
@@ -420,7 +429,7 @@ function App() {
                   <p>Humidity: {dayData.data.current.humidity}%</p>
                   <p>Wind Speed: {dayData.data.current.wind_speed} m/s</p>
                   <p>Status: {dayData.data.current.weather[0].description}</p>
-                  <button type="button" className="btn_details" onClick={() => handleShowDetailModal(dayData)}>
+                  <button type="button" className="btn_details" onClick={() => handleShowDetail5DaysAgo(dayData)}>
                     Xem chi tiết
                   </button>
                 </div>
@@ -429,27 +438,27 @@ function App() {
           </div>
         )}
 
-        {showDetailModal && detailWeatherData && (
+        {showDetail5DaysAgo && detail5DaysAgoWeatherData && (
           <div className="detail_weather_modal">
             <div className="detail_weather_modal_title">
               <h2>Detailed Weather</h2>
-              <h1>{new Date(detailWeatherData.hourly[0].dt * 1000).toLocaleDateString()}</h1>
-              <button className="close_button" onClick={closeDetailModal}>
+              <h1>{new Date(detail5DaysAgoWeatherData.hourly[0].dt * 1000).toLocaleDateString()}</h1>
+              <button className="close_button" onClick={closeDetail5DaysAgo}>
                 Close
               </button>
             </div>
             <div className="detail_weather_modal_list">
-              {detailWeatherData.hourly.map((hourlyData) => (
-                <div key={hourlyData.dt} className="detail_weather_modal_item">
-                <p>{new Date(hourlyData.dt * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
+              {detail5DaysAgoWeatherData.hourly.map((daily5DaysAgoData) => (
+                <div key={daily5DaysAgoData.dt} className="detail_weather_modal_item">
+                  <p>{new Date(daily5DaysAgoData.dt * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
                   <img
-                    src={`http://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
-                    alt={hourlyData.weather[0].description}
+                    src={`http://openweathermap.org/img/wn/${daily5DaysAgoData.weather[0].icon}.png`}
+                    alt={daily5DaysAgoData.weather[0].description}
                   />
-                  <p>{Math.round(hourlyData.temp)}°C</p>
-                  <p>Humidity: {hourlyData.humidity}%</p>
-                  <p>Wind Speed: {hourlyData.wind_speed} m/s</p>
-                  <p>Status: {hourlyData.weather[0].description}</p>
+                  <p>{Math.round(daily5DaysAgoData.temp)}°C</p>
+                  <p>Humidity: {daily5DaysAgoData.humidity}%</p>
+                  <p>Wind Speed: {daily5DaysAgoData.wind_speed} m/s</p>
+                  <p>Status: {daily5DaysAgoData.weather[0].description}</p>
                 </div>
               ))}
             </div>
@@ -457,7 +466,7 @@ function App() {
         )}
 
 
-
+        {/*  */}
         {show30DaysAgoWeather && weather30DaysAgo && (
           <div className="weather_30_days_ago">
             <div className="weather_30_days_ago_title">
@@ -467,17 +476,17 @@ function App() {
               </button>
             </div>
             <div className="weather_30_days_ago_list">
-              {weather30DaysAgo.hourly.map((hourlyData) => (
-                <div key={hourlyData.dt} className="weather_30_days_ago_item">
-                  <p>{new Date(hourlyData.dt * 1000).toLocaleTimeString()}</p>
+              {weather30DaysAgo.hourly.map((history30DaysData) => (
+                <div key={history30DaysData.dt} className="weather_30_days_ago_item">
+                  <p>{new Date(history30DaysData.dt * 1000).toLocaleTimeString()}</p>
                   <img
-                    src={`http://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
-                    alt={hourlyData.weather[0].description}
+                    src={`http://openweathermap.org/img/wn/${history30DaysData.weather[0].icon}.png`}
+                    alt={history30DaysData.weather[0].description}
                   />
-                  <p>{Math.round(hourlyData.temp)}°C</p>
-                  <p>Humidity: {hourlyData.humidity}%</p>
-                  <p>Wind Speed: {hourlyData.wind_speed} m/s</p>
-                  <p>Status: {hourlyData.weather[0].description}</p>
+                  <p>{Math.round(history30DaysData.temp)}°C</p>
+                  <p>Humidity: {history30DaysData.humidity}%</p>
+                  <p>Wind Speed: {history30DaysData.wind_speed} m/s</p>
+                  <p>Status: {history30DaysData.weather[0].description}</p>
                 </div>
               ))}
             </div>
