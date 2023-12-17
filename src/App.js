@@ -343,7 +343,7 @@ function App() {
       </div>
 
       <div className="weather_content">
-        {/* Hourly Weather */}
+      {/* Hourly Weather */}
         {showHourlyWeather && hourlyWeatherData && (
           <div className="hourly_weather">
             <div className="hourly_weather_title">
@@ -408,7 +408,7 @@ function App() {
         )}
 
 
-        {/* Weather 5 Days Ago */}
+{/* Weather 5 Days Ago */}
         {show5DaysAgoWeather && weather5DaysAgo && (
           <div className="FiveDays_ago_weather">
             <div className="FiveDays_ago_weather_title">
@@ -448,17 +448,17 @@ function App() {
               </button>
             </div>
             <div className="detail_weather_modal_list">
-              {detail5DaysAgoWeatherData.hourly.map((daily5DaysAgoData) => (
-                <div key={daily5DaysAgoData.dt} className="detail_weather_modal_item">
-                  <p>{new Date(daily5DaysAgoData.dt * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
+              {detail5DaysAgoWeatherData.hourly.map((hourlyData) => (
+                <div key={hourlyData.dt} className="detail_weather_modal_item">
+                  <p>{new Date(hourlyData.dt * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
                   <img
-                    src={`http://openweathermap.org/img/wn/${daily5DaysAgoData.weather[0].icon}.png`}
-                    alt={daily5DaysAgoData.weather[0].description}
+                    src={`http://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
+                    alt={hourlyData.weather[0].description}
                   />
-                  <p>{Math.round(daily5DaysAgoData.temp)}°C</p>
-                  <p>Humidity: {daily5DaysAgoData.humidity}%</p>
-                  <p>Wind Speed: {daily5DaysAgoData.wind_speed} m/s</p>
-                  <p>Status: {daily5DaysAgoData.weather[0].description}</p>
+                  <p>{Math.round(hourlyData.temp)}°C</p>
+                  <p>Humidity: {hourlyData.humidity}%</p>
+                  <p>Wind Speed: {hourlyData.wind_speed} m/s</p>
+                  <p>Status: {hourlyData.weather[0].description}</p>
                 </div>
               ))}
             </div>
@@ -466,7 +466,7 @@ function App() {
         )}
 
 
-        {/*  */}
+{/*  */}
         {show30DaysAgoWeather && weather30DaysAgo && (
           <div className="weather_30_days_ago">
             <div className="weather_30_days_ago_title">
@@ -476,17 +476,17 @@ function App() {
               </button>
             </div>
             <div className="weather_30_days_ago_list">
-              {weather30DaysAgo.hourly.map((history30DaysData) => (
-                <div key={history30DaysData.dt} className="weather_30_days_ago_item">
-                  <p>{new Date(history30DaysData.dt * 1000).toLocaleTimeString()}</p>
+              {weather30DaysAgo.hourly.map((hourlyData) => (
+                <div key={hourlyData.dt} className="weather_30_days_ago_item">
+                  <p>{new Date(hourlyData.dt * 1000).toLocaleTimeString()}</p>
                   <img
-                    src={`http://openweathermap.org/img/wn/${history30DaysData.weather[0].icon}.png`}
-                    alt={history30DaysData.weather[0].description}
+                    src={`http://openweathermap.org/img/wn/${hourlyData.weather[0].icon}.png`}
+                    alt={hourlyData.weather[0].description}
                   />
-                  <p>{Math.round(history30DaysData.temp)}°C</p>
-                  <p>Humidity: {history30DaysData.humidity}%</p>
-                  <p>Wind Speed: {history30DaysData.wind_speed} m/s</p>
-                  <p>Status: {history30DaysData.weather[0].description}</p>
+                  <p>{Math.round(hourlyData.temp)}°C</p>
+                  <p>Humidity: {hourlyData.humidity}%</p>
+                  <p>Wind Speed: {hourlyData.wind_speed} m/s</p>
+                  <p>Status: {hourlyData.weather[0].description}</p>
                 </div>
               ))}
             </div>
