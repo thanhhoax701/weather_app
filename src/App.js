@@ -69,12 +69,12 @@ function App() {
       setLoading(true);
 
       const currentWeatherResponse = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
       setWeatherData(currentWeatherResponse.data);
 
       const hourlyWeatherResponse = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
 
       const currentHour = currentDateTime.getHours();
@@ -100,7 +100,7 @@ function App() {
       setLoading(true);
 
       const dailyWeatherResponse = await axios.get(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
 
       console.log(lat, lon);
@@ -129,7 +129,7 @@ function App() {
 
           // Fetch weather data for the current day based on current city
           const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${dayTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+            `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${dayTimestamp}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
           );
 
           // Store the weather data for the current day in the array
@@ -148,7 +148,7 @@ function App() {
     try {
       const dayTimestamp = dayData.data.current.dt;
       const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${dayTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&dt=${dayTimestamp}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
 
       setDetailWeatherData(response.data);
@@ -172,7 +172,7 @@ function App() {
 
         // Lấy dữ liệu thời tiết cho 30 ngày trước dựa trên vị trí hiện tại
         const response = await axios.get(
-          `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${thirtyDaysAgoTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+          `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${thirtyDaysAgoTimestamp}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
         );
 
         setWeather30DaysAgo(response.data);
@@ -201,12 +201,12 @@ function App() {
       setLoading(true);
 
       const weatherResponse = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
 
       // Hourly Weather
       const hourlyWeatherResponse = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${searchCity}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${searchCity}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
 
       const filteredHourlyData = hourlyWeatherResponse.data.list.filter((item) => {
@@ -224,7 +224,7 @@ function App() {
 
       // Daily Weather
       const dailyWeatherResponse = await axios.get(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherResponse.data.coord.lat}&lon=${weatherResponse.data.coord.lon}&exclude=current,minutely,hourly,alerts&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherResponse.data.coord.lat}&lon=${weatherResponse.data.coord.lon}&exclude=current,minutely,hourly,alerts&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
       );
 
       const next7DaysData = dailyWeatherResponse.data.daily.slice(1, 8);
@@ -237,7 +237,7 @@ function App() {
         const dayTimestamp = Math.round((currentDateTime.getTime() - i * 24 * 60 * 60 * 1000) / 1000);
 
         const response = await axios.get(
-          `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherResponse.data.coord.lat}&lon=${weatherResponse.data.coord.lon}&dt=${dayTimestamp}&appid=7b16a3bb0d4c6253ab56ca6a2a14f500&units=metric`
+          `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${weatherResponse.data.coord.lat}&lon=${weatherResponse.data.coord.lon}&dt=${dayTimestamp}&appid=bd5e378503939ddaee76f12ad7a97608&units=metric`
         );
 
         newWeather5DaysAgo.push({ day: i, data: response.data });
